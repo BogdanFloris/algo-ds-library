@@ -2,7 +2,7 @@
 Binary Heap Implementation
 """
 from abc import ABC, abstractmethod
-import sys.maxsize as maxsize
+import sys
 
 
 class Heap(ABC):
@@ -117,7 +117,7 @@ class MaxHeap(Heap):
 
     def insert(self, key):
         self.current_size += 1
-        self.heap_list[self.current_size] = -maxsize
+        self.heap_list[self.current_size] = -sys.maxsize
         self.increase_key(self.current_size, key)
 
     def heapify(self, i):
