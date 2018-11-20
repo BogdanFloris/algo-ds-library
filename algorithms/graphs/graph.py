@@ -3,6 +3,7 @@ Graphs Module
 """
 import queue
 import sys
+from datastructures.heap import MutablePriorityQueue
 
 
 # Colors used by the search algorithms
@@ -255,9 +256,25 @@ class Graph:
             v.dist[source] = u.dist[source] + weight
             v.predecessor = u
 
+    @staticmethod
+    def relax_with_priority_update(source, u, v, weight, priority_queue):
+        """
+        Performs a relaxation operation for u and v.
+        Updates the priority queue with a new key for v
+        :param source: source of the shortes path algorithm
+        :param u: vertex 1
+        :param v: vertex 2
+        :param weight: weight of the edge between u and v
+        :param priority_queue: to be updated
+        """
+        if v.dist[source] > u.dist[source] + weight:
+            v.dist[source] = u.dist[source] + weight
+            v.predecessor = u
+            priority_queue.add_task(v, v.dist[source])
+
     def bellman_ford(self, source_key):
         """
-        Applies the Bellman-Ford shortest path algorithm from source_key
+        Applies the Bellman-Ford shortest path algorithm from source_key.
         :param source_key: the key of the source vertex
         """
         source: Vertex = self.get_vertex(source_key)
@@ -268,6 +285,23 @@ class Graph:
         for edge in self.get_edges():
             if edge[1].dist[source] > edge[0].dist[source] + edge[2]:
                 raise ValueError("Negative Weight Cycle Found")
+
+    def dijkstra(self, source_key):
+        """
+        Applies the Dijkstra shortest path algorithm from source_key.
+        Only works for graphs with positive weights.
+        :param source_key: the key of the source vertex
+        """
+        source: Vertex = self.get_vertex(source_key)
+        self.initialize_single_source(source)
+        priority_queue = MutablePriorityQueue()
+        for v_key in self.get_vertices():
+            v: Vertex = self.get_vertex(v_key)
+            priority_queue.add_task(v, v.dist[source])
+        while not priority_queue.empty():
+            u: Vertex = priority_queue.pop_task()
+            for v in u.get_connections():
+                self.relax_with_priority_update(source, u, v, u.get_weight(v), priority_queue)
 
 
 if __name__ == "__main__":
@@ -289,7 +323,7 @@ if __name__ == "__main__":
     s = g.get_vertex(0)
     for vertex in g:
         print("Shortest number of edges from 0 to {}: {}".format(vertex.get_id(), vertex.dist[s]))
-    g.bellman_ford(0)
+    g.dijkstra(0)
     s = g.get_vertex(0)
     for vertex in g:
         print("Shortest path from 0 to {}: {}".format(vertex.get_id(), vertex.dist[s]))

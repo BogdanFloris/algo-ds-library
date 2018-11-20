@@ -169,6 +169,12 @@ class MutablePriorityQueue:
         # unique sequence counter
         self.counter = itertools.count()
 
+    def empty(self):
+        """
+        :return: True if the queue is empty, false otherwise
+        """
+        return len(self.entry_finder) == 0
+
     def add_task(self, task, priority=0):
         """
         Adds a new task or updates the priority of an existing task
