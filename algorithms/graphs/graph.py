@@ -88,6 +88,16 @@ class Graph:
         """
         return self.vertices.keys()
 
+    def get_edges(self):
+        """
+        :return: a list of edges in the graph
+        """
+        edges = []
+        for v in self:
+            for u in v.get_connections():
+                edges.append((v, u, v.get_weight(u)))
+        return edges
+
     def add_vertex(self, key):
         """
         Adds a vertex with the specified key to the graph.
@@ -222,6 +232,30 @@ class Graph:
                 self.dfs_visit(v)
         u.color = BLACK
 
+    def initialize_single_source(self, source_key):
+        """
+        Initialization method used by single source shortes path algorithms.
+        :param source_key: the key of the source vertex
+        """
+        source: Vertex = self.get_vertex(source_key)
+        for v in self:
+            v.dist[source] = sys.maxsize
+            v.predecessor = None
+        source.dist[source] = 0
+
+    @staticmethod
+    def relax(source, u, v, weight):
+        """
+        Performs a relaxation operation for u and v.
+        :param source: source of the shortest path algorithm
+        :param u: vertex 1
+        :param v: vertex 2
+        :param weight: weight of the edge between u and v
+        """
+        if v.dist[source] > u.dist[source] + weight:
+            v.dist[source] = u.dist[source] + weight
+            v.predecessor = u
+
 
 if __name__ == "__main__":
     g = Graph()
@@ -236,9 +270,9 @@ if __name__ == "__main__":
     g.add_edge(4, 0, 1)
     g.add_edge(5, 4, 8)
     g.add_edge(5, 2, 1)
-    for vertex in g:
-        for w in vertex.get_connections():
-            print("({}, {}) with weight {}".format(vertex.get_id(), w.get_id(), vertex.get_weight(w)))
+    g_edges = g.get_edges()
+    for g_edge in g_edges:
+        print("({}, {}) with weight {}".format(g_edge[0].get_id(), g_edge[1].get_id(), g_edge[2]))
     g.bfs(0)
     s = g.get_vertex(0)
     for vertex in g:
