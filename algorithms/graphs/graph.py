@@ -65,8 +65,6 @@ class Graph:
                 return True
         return False
 
-    def is_path
-
     def get_vertex(self, key):
         """
         :param key: key of the vertex
