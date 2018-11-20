@@ -275,6 +275,8 @@ class Graph:
     def bellman_ford(self, source_key):
         """
         Applies the Bellman-Ford shortest path algorithm from source_key.
+        Only works for graphs that do not contain a negative weight cycle.
+        If a negative weight cycle is found, the method raises a ValueError.
         :param source_key: the key of the source vertex
         """
         source: Vertex = self.get_vertex(source_key)
