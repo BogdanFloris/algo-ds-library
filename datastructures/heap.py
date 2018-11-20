@@ -2,7 +2,9 @@
 Binary Heap Implementation
 """
 from abc import ABC, abstractmethod
+from heapq import heappush, heappop
 import sys
+import itertools
 
 
 class Heap(ABC):
@@ -148,3 +150,56 @@ class MinHeap(Heap):
 
     def insert(self, key):
         pass
+
+
+class MutablePriorityQueue:
+    """
+    Mutable Priority Queue, used to update priorities in the queue.
+    Code from:
+    https://docs.python.org/3/library/heapq.html#priority-queue-implementation-notes
+    """
+    # placeholder for a removed task
+    REMOVED = '<removed-task>'
+
+    def __init__(self):
+        # list of entries arranged in a heap
+        self.pq = []
+        # mapping of tasks to entries
+        self.entry_finder = {}
+        # unique sequence counter
+        self.counter = itertools.count()
+
+    def add_task(self, task, priority=0):
+        """
+        Adds a new task or updates the priority of an existing task
+        :param task: task to be added
+        :param priority: task's priority
+        """
+        if task in self.entry_finder:
+            self.remove_task(task)
+        count = next(self.counter)
+        entry = [priority, count, task]
+        self.entry_finder[task] = entry
+        heappush(self.pq, entry)
+
+    def remove_task(self, task):
+        """
+        Marks an existing task as removed.
+        Raises KeyError if not found.
+        :param task: to be removed
+        """
+        entry = self.entry_finder.pop(task)
+        entry[-1] = self.REMOVED
+
+    def pop_task(self):
+        """
+        Removes and returns the lowest priority task.
+        Raises KeyError if empty.
+        :return: lowest priority task
+        """
+        while self.pq:
+            _, _, task = heappop(self.pq)
+            if task is not self.REMOVED:
+                del self.entry_finder[task]
+                return task
+        raise KeyError("Pop from an empty priority queue!")
