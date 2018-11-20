@@ -232,12 +232,11 @@ class Graph:
                 self.dfs_visit(v)
         u.color = BLACK
 
-    def initialize_single_source(self, source_key):
+    def initialize_single_source(self, source):
         """
-        Initialization method used by single source shortes path algorithms.
-        :param source_key: the key of the source vertex
+        Initialization method used by single source shortest path algorithms.
+        :param source: the source vertex
         """
-        source: Vertex = self.get_vertex(source_key)
         for v in self:
             v.dist[source] = sys.maxsize
             v.predecessor = None
@@ -256,6 +255,20 @@ class Graph:
             v.dist[source] = u.dist[source] + weight
             v.predecessor = u
 
+    def bellman_ford(self, source_key):
+        """
+        Applies the Bellman-Ford shortest path algorithm from source_key
+        :param source_key: the key of the source vertex
+        """
+        source: Vertex = self.get_vertex(source_key)
+        self.initialize_single_source(source)
+        for _ in range(self.num_vertices - 1):
+            for edge in self.get_edges():
+                self.relax(source, edge[0], edge[1], edge[2])
+        for edge in self.get_edges():
+            if edge[1].dist[source] > edge[0].dist[source] + edge[2]:
+                raise ValueError("Negative Weight Cycle Found")
+
 
 if __name__ == "__main__":
     g = Graph()
@@ -270,10 +283,13 @@ if __name__ == "__main__":
     g.add_edge(4, 0, 1)
     g.add_edge(5, 4, 8)
     g.add_edge(5, 2, 1)
-    g_edges = g.get_edges()
-    for g_edge in g_edges:
+    for g_edge in g.get_edges():
         print("({}, {}) with weight {}".format(g_edge[0].get_id(), g_edge[1].get_id(), g_edge[2]))
     g.bfs(0)
     s = g.get_vertex(0)
     for vertex in g:
         print("Shortest number of edges from 0 to {}: {}".format(vertex.get_id(), vertex.dist[s]))
+    g.bellman_ford(0)
+    s = g.get_vertex(0)
+    for vertex in g:
+        print("Shortest path from 0 to {}: {}".format(vertex.get_id(), vertex.dist[s]))
