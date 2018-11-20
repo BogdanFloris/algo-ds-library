@@ -261,7 +261,7 @@ class Graph:
         """
         Performs a relaxation operation for u and v.
         Updates the priority queue with a new key for v
-        :param source: source of the shortes path algorithm
+        :param source: source of the shortest path algorithm
         :param u: vertex 1
         :param v: vertex 2
         :param weight: weight of the edge between u and v
