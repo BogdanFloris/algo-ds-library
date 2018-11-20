@@ -178,10 +178,13 @@ class Graph:
         source: Vertex = self.get_vertex(source_key)
         for u in self:
             if u is not source:
+                u.color = WHITE
+                u.predecessor = None
                 # initialize the distance from the source
                 u.dist[source] = sys.maxsize
         source.color = GRAY
         source.dist[source] = 0
+        source.predecessor = None
         # initialize queue with max size number of vertices
         q = queue.Queue(self.num_vertices)
         q.put(source)
@@ -194,6 +197,30 @@ class Graph:
                     v.predecessor = u
                     q.put(v)
             u.color = BLACK
+
+    def dfs(self):
+        """
+        Runs Depth First Search on this graph.
+        """
+        for u in self:
+            u.color = WHITE
+            u.predecessor = None
+        for u in self:
+            if u.color is WHITE:
+                self.dfs_visit(u)
+
+    def dfs_visit(self, u: Vertex):
+        """
+        Explores a Vertex u. Called by dfs
+        :param u: the explored vertex
+        """
+        print(u.get_id(), end=" ")
+        u.color = GRAY
+        for v in u.get_connections():
+            if v.color is WHITE:
+                v.predecessor = u
+                self.dfs_visit(v)
+        u.color = BLACK
 
 
 if __name__ == "__main__":
